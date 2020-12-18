@@ -1,0 +1,30 @@
+version: "3"
+services:
+  app:
+    build: ./app
+    container_name: app
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - ./config/grafana.ini:/etc/grafana/grafana.ini
+      - ./config/provisioning:/etc/grafana/provisioning
+      - ./config/dashboards:/var/lib/grafana/dashboards
+      - playground-grafana-storage:/var/lib/grafana
+    ports:
+      - 3000:3000
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+volumes:
+  playground-grafana-storage:
